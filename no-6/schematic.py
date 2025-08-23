@@ -4,7 +4,7 @@ def make_schematic(mc_filename, schem_filename):
     mc_file = open(mc_filename, 'r')
     schem = mcschematic.MCSchematic()
     
-    # Generate 1024 xz positions
+    # Generate 64 xz positions
     
     mem_start_pos = [-4, -1, 2]
     pos_list = []
@@ -41,23 +41,28 @@ def make_schematic(mc_filename, schem_filename):
         
         face = 'east' if address < 32 else 'west'
         new_pos = pos_list[address].copy()
+        #print(f"MC {line}")
 
-        byte1 = line[8:]
-        byte2 = line[:8]
+        byte1 = line[:8]
+        byte2 = line[8:]
 
         for i, char in enumerate(byte1):
             if char == '1':
+                #print(f"Setting block at {new_pos} to minecraft:repeater[facing={face}]")
                 schem.setBlock(tuple(new_pos), f'minecraft:repeater[facing={face}]')
             else:
                 schem.setBlock(tuple(new_pos), 'minecraft:purple_wool')
+                #print(f"Setting block at {new_pos} to minecraft:purple_wool")
             new_pos[1] -= 2
 
         new_pos[1] -= 2
 
         for i, char in enumerate(byte2):
             if char == '1':
+                #print(f"Setting block at {new_pos} to minecraft:repeater[facing={face}]")
                 schem.setBlock(tuple(new_pos), f'minecraft:repeater[facing={face}]')
             else:
+                #print(f"Setting block at {new_pos} to minecraft:purple_wool")
                 schem.setBlock(tuple(new_pos), 'minecraft:purple_wool')
             new_pos[1] -= 2
 
