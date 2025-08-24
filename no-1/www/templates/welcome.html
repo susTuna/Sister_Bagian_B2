@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ page_title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello, {{ username }}!</h1>
+        <p>{{ message }}</p>
+        <p>This page was generated using our simple template engine.</p>
+    </div>
+    <div class="footer">
+        <p>Server time: {{ current_time }}</p>
+        <p>Powered by {{ server_name }}</p>
+    </div>
+</body>
+</html>
