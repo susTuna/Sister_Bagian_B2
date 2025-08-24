@@ -830,11 +830,305 @@ handle_delete_request:
 	.size	handle_delete_request, .-handle_delete_request
 	.section	.rodata.str1.1
 .LC24:
-	.string	"File not found: %s"
+	.string	"Shutting down server..."
+	.text
+	.p2align 4
+	.globl	signal_handler
+	.type	signal_handler, @function
+signal_handler:
+	cmpl	$2, %edi
+	je	.L155
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L155:
+	xorl	%eax, %eax
+	subq	$8, %rsp
+	leaq	.LC24(%rip), %rsi
+	xorl	%edi, %edi
+	call	log_message
+	movl	log_config(%rip), %eax
+	testl	%eax, %eax
+	je	.L148
+	movq	16+log_config(%rip), %rdi
+	testq	%rdi, %rdi
+	je	.L148
+	call	fclose@PLT
+	movq	$0, 16+log_config(%rip)
+.L148:
+	movl	server_socket(%rip), %edi
+	call	close@PLT
+	xorl	%edi, %edi
+	call	exit@PLT
+	.size	signal_handler, .-signal_handler
+	.section	.rodata.str1.1
 .LC25:
-	.string	"Serving file: %s (%ld bytes)"
+	.string	"a"
 .LC26:
+	.string	"Error opening log file: %s\n"
+.LC27:
+	.string	"Server logging initialized"
+	.text
+	.p2align 4
+	.globl	log_init
+	.type	log_init, @function
+log_init:
+	subq	$8, %rsp
+	movl	log_config(%rip), %edx
+	testl	%edx, %edx
+	jne	.L161
+.L158:
+	leaq	.LC27(%rip), %rsi
+	xorl	%edi, %edi
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	jmp	log_message
+	.p2align 4,,10
+	.p2align 3
+.L161:
+	movq	8+log_config(%rip), %rdi
+	leaq	.LC25(%rip), %rsi
+	call	fopen@PLT
+	movq	%rax, 16+log_config(%rip)
+	testq	%rax, %rax
+	jne	.L158
+	call	__errno_location@PLT
+	movl	(%rax), %edi
+	call	strerror@PLT
+	movq	stderr(%rip), %rdi
+	leaq	.LC26(%rip), %rsi
+	movq	%rax, %rdx
+	xorl	%eax, %eax
+	call	fprintf@PLT
+	xorl	%eax, %eax
+	movl	%eax, log_config(%rip)
+	jmp	.L158
+	.size	log_init, .-log_init
+	.section	.rodata.str1.1
+.LC28:
+	.string	"application/octet-stream"
+.LC29:
+	.string	"image/jpeg"
+.LC30:
+	.string	"text/css"
+.LC31:
+	.string	"application/javascript"
+.LC32:
+	.string	"text/html; charset=utf-8"
+.LC33:
+	.string	"image/png"
+.LC34:
+	.string	"image/gif"
+.LC35:
+	.string	"image/svg+xml"
+.LC36:
+	.string	"image/x-icon"
+.LC37:
+	.string	"application/pdf"
+.LC38:
+	.string	"application/zip"
+.LC39:
+	.string	"text/plain"
+.LC40:
+	.string	"audio/mpeg"
+.LC41:
+	.string	"video/mp4"
+.LC42:
+	.string	"image/webp"
+.LC43:
+	.string	"image/bmp"
+.LC44:
+	.string	"image/tiff"
+.LC45:
+	.string	"html"
+.LC46:
+	.string	"htm"
+.LC47:
+	.string	"css"
+.LC48:
+	.string	"js"
+.LC49:
+	.string	"jpg"
+.LC50:
+	.string	"jpeg"
+.LC51:
+	.string	"png"
+.LC52:
+	.string	"gif"
+.LC53:
+	.string	"svg"
+.LC54:
+	.string	"ico"
+.LC55:
+	.string	"pdf"
+.LC56:
+	.string	"zip"
+.LC57:
+	.string	"txt"
+.LC58:
+	.string	"mp3"
+.LC59:
+	.string	"mp4"
+.LC60:
+	.string	"webp"
+.LC61:
+	.string	"bmp"
+.LC62:
+	.string	"tiff"
+.LC63:
+	.string	"tif"
+	.text
+	.p2align 4
+	.globl	get_content_type
+	.type	get_content_type, @function
+get_content_type:
+	pushq	%rbp
+	movl	$46, %esi
+	pushq	%rbx
+	subq	$8, %rsp
+	call	strrchr@PLT
+	testq	%rax, %rax
+	je	.L164
+	leaq	1(%rax), %rbx
+	leaq	.LC45(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC32(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC46(%rip), %rsi
+	movq	%rbx, %rdi
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC47(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC30(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC48(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC31(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC49(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC29(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC50(%rip), %rsi
+	movq	%rbx, %rdi
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC51(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC33(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC52(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC34(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC53(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC35(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC54(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC36(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC55(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC37(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC56(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC38(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC57(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC39(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC58(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC40(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC59(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC41(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC60(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC42(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC61(%rip), %rsi
+	movq	%rbx, %rdi
+	leaq	.LC43(%rip), %rbp
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L162
+	leaq	.LC62(%rip), %rsi
+	movq	%rbx, %rdi
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	je	.L183
+	leaq	.LC63(%rip), %rsi
+	movq	%rbx, %rdi
+	call	strcasecmp@PLT
+	testl	%eax, %eax
+	jne	.L164
+.L183:
+	leaq	.LC44(%rip), %rbp
+.L162:
+	addq	$8, %rsp
+	movq	%rbp, %rax
+	popq	%rbx
+	popq	%rbp
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L164:
+	leaq	.LC28(%rip), %rbp
+	addq	$8, %rsp
+	movq	%rbp, %rax
+	popq	%rbx
+	popq	%rbp
+	ret
+	.size	get_content_type, .-get_content_type
+	.section	.rodata.str1.1
+.LC64:
+	.string	"File not found: %s"
+.LC65:
+	.string	"Serving file: %s (%ld bytes)"
+.LC66:
 	.string	"Failed to open file: %s - %s"
+	.section	.rodata.str1.8
+	.align 8
+.LC67:
+	.string	"HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %ld\r\nConnection: close\r\n\r\n"
 	.text
 	.p2align 4
 	.globl	serve_file
@@ -848,9 +1142,9 @@ serve_file:
 	leaq	.LC12(%rip), %rdx
 	movl	%edi, %ebp
 	pushq	%rbx
-	subq	$4512, %rsp
+	subq	$5024, %rsp
 	movq	%fs:40, %rax
-	movq	%rax, 4504(%rsp)
+	movq	%rax, 5016(%rsp)
 	xorl	%eax, %eax
 	leaq	144(%rsp), %rbx
 	movq	%rbx, %rdi
@@ -859,18 +1153,18 @@ serve_file:
 	movq	%rbx, %rdi
 	call	stat@PLT
 	testl	%eax, %eax
-	js	.L147
+	js	.L203
 	movl	24(%rsp), %eax
 	andl	$61440, %eax
 	cmpl	$32768, %eax
-	je	.L148
-.L147:
+	je	.L204
+.L203:
 	movq	%rbx, %rdx
-	leaq	.LC24(%rip), %rsi
+	leaq	.LC64(%rip), %rsi
 	movl	$1, %edi
 	xorl	%eax, %eax
 	call	log_message
-.L156:
+.L212:
 	movq	http_404_response(%rip), %rbx
 	movq	%rbx, %rdi
 	call	strlen@PLT
@@ -878,23 +1172,23 @@ serve_file:
 	movl	%ebp, %edi
 	movq	%rax, %rdx
 	call	write@PLT
-.L146:
-	movq	4504(%rsp), %rax
+.L202:
+	movq	5016(%rsp), %rax
 	subq	%fs:40, %rax
-	jne	.L157
-	addq	$4512, %rsp
+	jne	.L213
+	addq	$5024, %rsp
 	popq	%rbx
 	popq	%rbp
 	popq	%r12
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L148:
+.L204:
 	movq	48(%rsp), %rcx
 	movq	%rbx, %rdx
 	xorl	%edi, %edi
 	xorl	%eax, %eax
-	leaq	.LC25(%rip), %rsi
+	leaq	.LC65(%rip), %rsi
 	call	log_message
 	xorl	%esi, %esi
 	movq	%rbx, %rdi
@@ -902,50 +1196,58 @@ serve_file:
 	call	open@PLT
 	movl	%eax, %r12d
 	testl	%eax, %eax
-	js	.L158
-	movq	http_200_header(%rip), %rbx
+	js	.L214
 	movq	%rbx, %rdi
+	call	get_content_type
+	movq	48(%rsp), %r8
+	leaq	.LC67(%rip), %rdx
+	movl	$512, %esi
+	movq	%rax, %rcx
+	leaq	400(%rsp), %rdi
+	xorl	%eax, %eax
+	call	snprintf@PLT
+	leaq	400(%rsp), %rdi
 	call	strlen@PLT
-	movq	%rbx, %rsi
+	leaq	400(%rsp), %rsi
 	movl	%ebp, %edi
 	movq	%rax, %rdx
 	call	write@PLT
-	jmp	.L151
+	jmp	.L207
 	.p2align 4,,10
 	.p2align 3
-.L152:
+.L208:
 	movq	%rax, %rdx
-	leaq	400(%rsp), %rsi
+	leaq	912(%rsp), %rsi
 	movl	%ebp, %edi
 	call	write@PLT
-.L151:
+.L207:
 	movl	$4096, %edx
-	leaq	400(%rsp), %rsi
+	leaq	912(%rsp), %rsi
 	movl	%r12d, %edi
 	call	read@PLT
 	testq	%rax, %rax
-	jg	.L152
+	jg	.L208
 	movl	%r12d, %edi
 	call	close@PLT
-	jmp	.L146
+	jmp	.L202
 	.p2align 4,,10
 	.p2align 3
-.L158:
+.L214:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
 	movq	%rbx, %rdx
 	movl	$2, %edi
-	leaq	.LC26(%rip), %rsi
+	leaq	.LC66(%rip), %rsi
 	movq	%rax, %rcx
 	xorl	%eax, %eax
 	call	log_message
-	jmp	.L156
-.L157:
+	jmp	.L212
+.L213:
 	call	__stack_chk_fail@PLT
 	.size	serve_file, .-serve_file
 	.section	.rodata.str1.1
-.LC27:
+.LC68:
 	.string	"/index.html"
 	.text
 	.p2align 4
@@ -953,38 +1255,38 @@ serve_file:
 	.type	handle_get_request, @function
 handle_get_request:
 	cmpb	$47, (%rsi)
-	jne	.L161
+	jne	.L217
 	cmpb	$0, 1(%rsi)
-	jne	.L161
-	leaq	.LC27(%rip), %rsi
+	jne	.L217
+	leaq	.LC68(%rip), %rsi
 	jmp	serve_file
 	.p2align 4,,10
 	.p2align 3
-.L161:
+.L217:
 	jmp	serve_file
 	.size	handle_get_request, .-handle_get_request
 	.section	.rodata.str1.1
-.LC28:
+.LC69:
 	.string	"Empty request from %s"
-.LC29:
+.LC70:
 	.string	"[%s] Request: %s"
-.LC30:
+.LC71:
 	.string	"GET "
-.LC31:
+.LC72:
 	.string	"[%s] GET %s"
-.LC32:
+.LC73:
 	.string	"POST "
-.LC33:
+.LC74:
 	.string	"[%s] POST %s"
-.LC34:
+.LC75:
 	.string	"PUT "
-.LC35:
+.LC76:
 	.string	"[%s] PUT %s"
-.LC36:
+.LC77:
 	.string	"DELETE "
-.LC37:
+.LC78:
 	.string	"[%s] DELETE %s"
-.LC38:
+.LC79:
 	.string	"[%s] Unknown HTTP method"
 	.text
 	.p2align 4
@@ -1007,7 +1309,7 @@ handle_client:
 	movq	%rbp, %rsi
 	call	read@PLT
 	testq	%rax, %rax
-	jle	.L191
+	jle	.L247
 	movq	%rbp, %rsi
 	movq	%rsp, %rdi
 	movl	$255, %edx
@@ -1019,10 +1321,10 @@ handle_client:
 	movb	$0, 255(%rsp)
 	call	strchr@PLT
 	testq	%rax, %rax
-	je	.L165
-.L190:
+	je	.L221
+.L246:
 	movb	$0, (%rax)
-.L166:
+.L222:
 	leaq	1(%rbx), %rdx
 	movq	%rbp, %rsi
 	leaq	4352(%rsp), %rdi
@@ -1031,20 +1333,20 @@ handle_client:
 	xorl	%eax, %eax
 	movq	%rsp, %rcx
 	movq	%r13, %rdx
-	leaq	.LC29(%rip), %rsi
+	leaq	.LC70(%rip), %rsi
 	call	log_message
 	cmpl	$542393671, 256(%rsp)
-	je	.L192
+	je	.L248
 	cmpl	$1414745936, 256(%rsp)
-	je	.L193
-.L174:
+	je	.L249
+.L230:
 	cmpl	$542397776, 256(%rsp)
-	je	.L194
+	je	.L250
 	cmpl	$1162626372, 256(%rsp)
-	je	.L195
-.L180:
+	je	.L251
+.L236:
 	movq	%r13, %rdx
-	leaq	.LC38(%rip), %rsi
+	leaq	.LC79(%rip), %rsi
 	xorl	%eax, %eax
 	movl	$1, %edi
 	call	log_message
@@ -1055,42 +1357,42 @@ handle_client:
 	movl	%r14d, %edi
 	movq	%rax, %rdx
 	call	write@PLT
-	jmp	.L162
+	jmp	.L218
 	.p2align 4,,10
 	.p2align 3
-.L192:
+.L248:
 	leaq	260(%rsp), %rdi
 	call	extract_path
 	xorl	%edi, %edi
 	movq	%r13, %rdx
-	leaq	.LC31(%rip), %rsi
+	leaq	.LC72(%rip), %rsi
 	movq	%rax, %rbx
 	movq	%rax, %rcx
 	xorl	%eax, %eax
 	call	log_message
 	cmpb	$47, (%rbx)
-	jne	.L171
+	jne	.L227
 	cmpb	$0, 1(%rbx)
-	jne	.L171
-	leaq	.LC27(%rip), %rsi
+	jne	.L227
+	leaq	.LC68(%rip), %rsi
 	movl	%r14d, %edi
 	call	serve_file
-.L172:
+.L228:
 	movq	%rbx, %rdi
 	call	free@PLT
-	jmp	.L162
+	jmp	.L218
 	.p2align 4,,10
 	.p2align 3
-.L191:
+.L247:
 	movq	%r13, %rdx
-	leaq	.LC28(%rip), %rsi
+	leaq	.LC69(%rip), %rsi
 	movl	$1, %edi
 	xorl	%eax, %eax
 	call	log_message
-.L162:
+.L218:
 	movq	8456(%rsp), %rax
 	subq	%fs:40, %rax
-	jne	.L196
+	jne	.L252
 	addq	$8472, %rsp
 	popq	%rbx
 	popq	%rbp
@@ -1101,30 +1403,30 @@ handle_client:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L165:
+.L221:
 	movl	$10, %esi
 	movq	%rsp, %rdi
 	call	strchr@PLT
 	testq	%rax, %rax
-	jne	.L190
-	jmp	.L166
+	jne	.L246
+	jmp	.L222
 	.p2align 4,,10
 	.p2align 3
-.L171:
+.L227:
 	movq	%rbx, %rsi
 	movl	%r14d, %edi
 	call	serve_file
-	jmp	.L172
+	jmp	.L228
 	.p2align 4,,10
 	.p2align 3
-.L195:
+.L251:
 	cmpl	$541414469, 259(%rsp)
-	jne	.L180
+	jne	.L236
 	leaq	263(%rsp), %rdi
 	call	extract_path
 	movq	%r13, %rdx
 	xorl	%edi, %edi
-	leaq	.LC37(%rip), %rsi
+	leaq	.LC78(%rip), %rsi
 	movq	%rax, %rcx
 	movq	%rax, %rbp
 	xorl	%eax, %eax
@@ -1135,17 +1437,17 @@ handle_client:
 	call	handle_delete_request
 	movq	%rbp, %rdi
 	call	free@PLT
-	jmp	.L162
+	jmp	.L218
 	.p2align 4,,10
 	.p2align 3
-.L193:
+.L249:
 	cmpb	$32, 260(%rsp)
-	jne	.L174
+	jne	.L230
 	leaq	261(%rsp), %rdi
 	call	extract_path
 	movq	%r13, %rdx
 	xorl	%edi, %edi
-	leaq	.LC33(%rip), %rsi
+	leaq	.LC74(%rip), %rsi
 	movq	%rax, %rcx
 	movq	%rax, %rbp
 	xorl	%eax, %eax
@@ -1156,15 +1458,15 @@ handle_client:
 	call	handle_post_request
 	movq	%rbp, %rdi
 	call	free@PLT
-	jmp	.L162
+	jmp	.L218
 	.p2align 4,,10
 	.p2align 3
-.L194:
+.L250:
 	leaq	260(%rsp), %rdi
 	call	extract_path
 	movq	%r13, %rdx
 	xorl	%edi, %edi
-	leaq	.LC35(%rip), %rsi
+	leaq	.LC76(%rip), %rsi
 	movq	%rax, %rcx
 	movq	%rax, %rbp
 	xorl	%eax, %eax
@@ -1175,117 +1477,41 @@ handle_client:
 	call	handle_put_request
 	movq	%rbp, %rdi
 	call	free@PLT
-	jmp	.L162
-.L196:
+	jmp	.L218
+.L252:
 	call	__stack_chk_fail@PLT
 	.size	handle_client, .-handle_client
-	.section	.rodata.str1.1
-.LC39:
-	.string	"Shutting down server..."
-	.text
-	.p2align 4
-	.globl	signal_handler
-	.type	signal_handler, @function
-signal_handler:
-	cmpl	$2, %edi
-	je	.L206
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L206:
-	xorl	%eax, %eax
-	subq	$8, %rsp
-	leaq	.LC39(%rip), %rsi
-	xorl	%edi, %edi
-	call	log_message
-	movl	log_config(%rip), %eax
-	testl	%eax, %eax
-	je	.L199
-	movq	16+log_config(%rip), %rdi
-	testq	%rdi, %rdi
-	je	.L199
-	call	fclose@PLT
-	movq	$0, 16+log_config(%rip)
-.L199:
-	movl	server_socket(%rip), %edi
-	call	close@PLT
-	xorl	%edi, %edi
-	call	exit@PLT
-	.size	signal_handler, .-signal_handler
-	.section	.rodata.str1.1
-.LC40:
-	.string	"a"
-.LC41:
-	.string	"Error opening log file: %s\n"
-.LC42:
-	.string	"Server logging initialized"
-	.text
-	.p2align 4
-	.globl	log_init
-	.type	log_init, @function
-log_init:
-	subq	$8, %rsp
-	movl	log_config(%rip), %edx
-	testl	%edx, %edx
-	jne	.L212
-.L209:
-	leaq	.LC42(%rip), %rsi
-	xorl	%edi, %edi
-	xorl	%eax, %eax
-	addq	$8, %rsp
-	jmp	log_message
-	.p2align 4,,10
-	.p2align 3
-.L212:
-	movq	8+log_config(%rip), %rdi
-	leaq	.LC40(%rip), %rsi
-	call	fopen@PLT
-	movq	%rax, 16+log_config(%rip)
-	testq	%rax, %rax
-	jne	.L209
-	call	__errno_location@PLT
-	movl	(%rax), %edi
-	call	strerror@PLT
-	movq	stderr(%rip), %rdi
-	leaq	.LC41(%rip), %rsi
-	movq	%rax, %rdx
-	xorl	%eax, %eax
-	call	fprintf@PLT
-	xorl	%eax, %eax
-	movl	%eax, log_config(%rip)
-	jmp	.L209
-	.size	log_init, .-log_init
 	.section	.rodata.str1.8
 	.align 8
-.LC43:
+.LC80:
 	.string	"Invalid port number. Using default port %d"
 	.align 8
-.LC44:
+.LC81:
 	.string	"HTTP Server starting on port %d"
 	.section	.rodata.str1.1
-.LC45:
+.LC82:
 	.string	"Error creating socket: %s"
 	.section	.rodata.str1.8
 	.align 8
-.LC46:
+.LC83:
 	.string	"Error setting socket options: %s"
 	.section	.rodata.str1.1
-.LC47:
+.LC84:
 	.string	"Error binding socket: %s"
-.LC48:
+.LC85:
 	.string	"Error listening on socket: %s"
 	.section	.rodata.str1.8
 	.align 8
-.LC49:
+.LC86:
 	.string	"Server ready to accept connections"
 	.align 8
-.LC50:
+.LC87:
 	.string	"Error accepting connection: %s"
 	.align 8
-.LC51:
+.LC88:
 	.string	"New connection accepted from %s"
 	.section	.rodata.str1.1
-.LC52:
+.LC89:
 	.string	"Error forking process: %s"
 	.section	.text.startup,"ax",@progbits
 	.p2align 4
@@ -1304,12 +1530,12 @@ main:
 	movq	%rsi, %rbp
 	call	log_init
 	cmpl	$1, %ebx
-	jg	.L232
-.L214:
+	jg	.L272
+.L254:
 	movl	$6969, %ebx
-.L215:
+.L255:
 	movl	%ebx, %edx
-	leaq	.LC44(%rip), %rsi
+	leaq	.LC81(%rip), %rsi
 	xorl	%edi, %edi
 	xorl	%eax, %eax
 	call	log_message
@@ -1319,7 +1545,7 @@ main:
 	call	socket@PLT
 	movl	%eax, server_socket(%rip)
 	testl	%eax, %eax
-	js	.L233
+	js	.L273
 	leaq	8(%rsp), %rcx
 	movl	$4, %r8d
 	movl	$2, %edx
@@ -1328,7 +1554,7 @@ main:
 	movl	$1, 8(%rsp)
 	call	setsockopt@PLT
 	testl	%eax, %eax
-	js	.L234
+	js	.L274
 	xorl	%edx, %edx
 	movl	server_socket(%rip), %edi
 	xorl	%eax, %eax
@@ -1341,12 +1567,12 @@ main:
 	movw	%bx, 18(%rsp)
 	call	bind@PLT
 	testl	%eax, %eax
-	js	.L235
+	js	.L275
 	movl	server_socket(%rip), %edi
 	movl	$10, %esi
 	call	listen@PLT
 	testl	%eax, %eax
-	js	.L236
+	js	.L276
 	leaq	signal_handler(%rip), %rsi
 	movl	$2, %edi
 	leaq	48(%rsp), %rbp
@@ -1354,13 +1580,13 @@ main:
 	movl	$493, %esi
 	leaq	.LC11(%rip), %rdi
 	call	mkdir@PLT
-	leaq	.LC49(%rip), %rsi
+	leaq	.LC86(%rip), %rsi
 	xorl	%edi, %edi
 	xorl	%eax, %eax
 	call	log_message
 	.p2align 4
 	.p2align 3
-.L223:
+.L263:
 	movl	server_socket(%rip), %edi
 	leaq	12(%rsp), %rdx
 	leaq	32(%rsp), %rsi
@@ -1368,7 +1594,7 @@ main:
 	call	accept@PLT
 	movl	%eax, %ebx
 	testl	%eax, %eax
-	js	.L237
+	js	.L277
 	movl	$16, %ecx
 	movq	%rbp, %rdx
 	leaq	36(%rsp), %rsi
@@ -1377,50 +1603,50 @@ main:
 	xorl	%edi, %edi
 	xorl	%eax, %eax
 	movq	%rbp, %rdx
-	leaq	.LC51(%rip), %rsi
+	leaq	.LC88(%rip), %rsi
 	call	log_message
 	call	fork@PLT
 	testl	%eax, %eax
-	js	.L238
-	je	.L239
+	js	.L278
+	je	.L279
 	movl	%ebx, %edi
 	call	close@PLT
-	jmp	.L223
-.L237:
+	jmp	.L263
+.L277:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC50(%rip), %rsi
+	leaq	.LC87(%rip), %rsi
 	movl	$2, %edi
 	movq	%rax, %rdx
 	xorl	%eax, %eax
 	call	log_message
-	jmp	.L223
-.L238:
+	jmp	.L263
+.L278:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC52(%rip), %rsi
+	leaq	.LC89(%rip), %rsi
 	movl	$2, %edi
 	movq	%rax, %rdx
 	xorl	%eax, %eax
 	call	log_message
 	movl	%ebx, %edi
 	call	close@PLT
-	jmp	.L223
-.L232:
+	jmp	.L263
+.L272:
 	movq	8(%rbp), %rdi
 	call	parse_port
 	movl	%eax, %ebx
 	testl	%eax, %eax
-	jne	.L215
+	jne	.L255
 	movl	$6969, %edx
-	leaq	.LC43(%rip), %rsi
+	leaq	.LC80(%rip), %rsi
 	movl	$1, %edi
 	xorl	%eax, %eax
 	call	log_message
-	jmp	.L214
-.L239:
+	jmp	.L254
+.L279:
 	movl	server_socket(%rip), %edi
 	call	close@PLT
 	movq	%rbp, %rsi
@@ -1430,24 +1656,24 @@ main:
 	call	close@PLT
 	xorl	%edi, %edi
 	call	exit@PLT
-.L233:
+.L273:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC45(%rip), %rsi
+	leaq	.LC82(%rip), %rsi
 	movq	%rax, %rdx
-.L231:
+.L271:
 	movl	$2, %edi
 	xorl	%eax, %eax
 	call	log_message
 	movl	log_config(%rip), %ecx
 	testl	%ecx, %ecx
-	je	.L218
+	je	.L258
 	call	log_close.part.0
-.L218:
+.L258:
 	movq	72(%rsp), %rax
 	subq	%fs:40, %rax
-	jne	.L240
+	jne	.L280
 	addq	$80, %rsp
 	movl	$1, %eax
 	popq	%rbx
@@ -1456,28 +1682,28 @@ main:
 	popq	%r13
 	popq	%r14
 	ret
-.L235:
+.L275:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC47(%rip), %rsi
+	leaq	.LC84(%rip), %rsi
 	movq	%rax, %rdx
-	jmp	.L231
-.L234:
+	jmp	.L271
+.L274:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC46(%rip), %rsi
+	leaq	.LC83(%rip), %rsi
 	movq	%rax, %rdx
-	jmp	.L231
-.L236:
+	jmp	.L271
+.L276:
 	call	__errno_location@PLT
 	movl	(%rax), %edi
 	call	strerror@PLT
-	leaq	.LC48(%rip), %rsi
+	leaq	.LC85(%rip), %rsi
 	movq	%rax, %rdx
-	jmp	.L231
-.L240:
+	jmp	.L271
+.L280:
 	call	__stack_chk_fail@PLT
 	.size	main, .-main
 	.globl	server_socket
@@ -1490,39 +1716,39 @@ server_socket:
 	.globl	http_500_response
 	.section	.rodata.str1.8
 	.align 8
-.LC53:
+.LC90:
 	.string	"HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<html><body><h1>500 Internal Server Error</h1></body></html>\r\n"
 	.section	.data.rel.local,"aw"
 	.align 8
 	.type	http_500_response, @object
 	.size	http_500_response, 8
 http_500_response:
-	.quad	.LC53
+	.quad	.LC90
 	.globl	http_404_response
 	.section	.rodata.str1.8
 	.align 8
-.LC54:
+.LC91:
 	.string	"HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>\r\n"
 	.section	.data.rel.local
 	.align 8
 	.type	http_404_response, @object
 	.size	http_404_response, 8
 http_404_response:
-	.quad	.LC54
+	.quad	.LC91
 	.globl	http_200_header
 	.section	.rodata.str1.8
 	.align 8
-.LC55:
+.LC92:
 	.string	"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nConnection: close\r\n\r\n"
 	.section	.data.rel.local
 	.align 8
 	.type	http_200_header, @object
 	.size	http_200_header, 8
 http_200_header:
-	.quad	.LC55
+	.quad	.LC92
 	.globl	log_config
 	.section	.rodata.str1.1
-.LC56:
+.LC93:
 	.string	"server.log"
 	.section	.data.rel.local
 	.align 16
@@ -1531,7 +1757,7 @@ http_200_header:
 log_config:
 	.long	1
 	.long	1
-	.quad	.LC56
+	.quad	.LC93
 	.quad	0
 	.ident	"GCC: (GNU) 15.2.1 20250813"
 	.section	.note.GNU-stack,"",@progbits
