@@ -1,4 +1,3 @@
-	.file	"template.c"
 	.text
 	.p2align 4
 	.globl	template_create_context

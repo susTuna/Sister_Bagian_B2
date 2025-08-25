@@ -1,6 +1,134 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About - Assembly HTTP Server</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                color: #333;
+                background-color: #f5f5f5;
+            }
+            header {
+                background-color: #2c3e50;
+                color: white;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            nav {
+                background-color: #ecf0f1;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            nav a {
+                text-decoration: none;
+                color: #3498db;
+                font-weight: bold;
+                padding: 8px 15px;
+                margin: 0 5px;
+                border-radius: 3px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+            nav a:hover {
+                background-color: #3498db;
+                color: white;
+            }
+            .content {
+                background-color: white;
+                padding: 25px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .feature {
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #eee;
+            }
+            .feature h3 {
+                color: #2c3e50;
+                margin-top: 0;
+            }
+            code {
+                background-color: #f8f8f8;
+                padding: 2px 5px;
+                border-radius: 3px;
+                font-family: Consolas, Monaco, 'Andale Mono', monospace;
+                color: #e74c3c;
+            }
+            footer {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 0.9em;
+                color: #7f8c8d;
+            }
+        </style>
+    </head>
     <body>
-        <h1>About Page</h1>
-        <p>This server is built with x86-64 Assembly.</p>
+        <header>
+            <h1>About Assembly HTTP Server</h1>
+        </header>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about.html">About</a>
+            <a href="/ShinjiMio.gif">GIF Example</a>
+            <a href="/dfs.mp4">Video Example</a>
+        </nav>
+
+        <div class="content">
+            <div class="feature">
+                <h2>Project Overview</h2>
+                <p>This web server is built entirely with x86-64 Assembly language, demonstrating the power and efficiency of low-level programming. The server is capable of handling HTTP requests, serving various types of content, and implementing several advanced features typically found in higher-level web servers.</p>
+            </div>
+
+            <div class="feature">
+                <h3>Technical Details</h3>
+                <p>The server is implemented using x86-64 assembly instructions and compiled using the GNU Assembler. It directly interacts with system calls for socket operations, file handling, and process management.</p>
+                <p>Key technical components include:</p>
+                <ul>
+                    <li>Socket programming with <code>socket()</code>, <code>bind()</code>, <code>listen()</code>, and <code>accept()</code> system calls</li>
+                    <li>Process forking for concurrent connection handling</li>
+                    <li>HTTP request parsing and response generation</li>
+                    <li>File I/O operations for serving static content</li>
+                </ul>
+            </div>
+
+            <div class="feature">
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Static File Serving</strong> - HTML, CSS, JavaScript, images, and videos</li>
+                    <li><strong>Template Engine</strong> - Dynamic content generation with variable substitution</li>
+                    <li><strong>Authentication System</strong> - HTTP Basic Auth for protecting resources</li>
+                    <li><strong>Binary Integration</strong> - Execute programs and incorporate their output</li>
+                    <li><strong>Custom Port Binding</strong> - Run the server on any specified port</li>
+                    <li><strong>Logging System</strong> - Record server activities for monitoring</li>
+                </ul>
+            </div>
+
+            <div class="feature">
+                <h3>Why Assembly?</h3>
+                <p>While most modern web servers are written in higher-level languages like C, C++, Go, or Rust, implementing a server in assembly language provides several benefits:</p>
+                <ul>
+                    <li>Deep understanding of HTTP protocol implementation</li>
+                    <li>Fine-grained control over memory usage and performance</li>
+                    <li>Educational value in understanding low-level systems programming</li>
+                    <li>Minimizing dependencies on external libraries</li>
+                </ul>
+                <p>This project demonstrates that even complex network applications can be built using the most fundamental programming tools available.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Assembly HTTP Server &copy; 2025 - A demonstration of low-level web server implementation</p>
+        </footer>
     </body>
 </html>

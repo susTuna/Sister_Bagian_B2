@@ -1,9 +1,137 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Assembly HTTP Server</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                color: #333;
+            }
+            header {
+                background-color: #2c3e50;
+                color: white;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            nav {
+                background-color: #ecf0f1;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            nav ul {
+                list-style: none;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            nav a {
+                text-decoration: none;
+                color: #3498db;
+                font-weight: bold;
+                padding: 8px 15px;
+                border-radius: 3px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+            nav a:hover {
+                background-color: #3498db;
+                color: white;
+            }
+            .feature-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
+                margin-top: 30px;
+            }
+            .feature-card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 15px;
+                background-color: #f9f9f9;
+            }
+            .feature-card h3 {
+                color: #2c3e50;
+                margin-top: 0;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 5px;
+            }
+            footer {
+                margin-top: 40px;
+                text-align: center;
+                font-size: 0.9em;
+                color: #7f8c8d;
+            }
+        </style>
     </head>
     <body>
-        <h1>Hello from Assembly HTTP Server!</h1>
-        <p>This page is served from a file.</p>
+        <header>
+            <h1>Assembly HTTP Server</h1>
+            <p>A web server written entirely in x86-64 assembly</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/ShinjiMio.gif">GIF Example</a></li>
+                <li><a href="/dfs.mp4">Video Example</a></li>
+                <li><a href="/template/welcome.html">Template Demo</a></li>
+                <li><a href="/private/secret.html">Protected Content</a></li>
+                <li><a href="/exec/sysinfo">System Info</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section>
+                <h2>Welcome to the Assembly HTTP Server!</h2>
+                <p>
+                    This server is implemented entirely in x86-64 assembly language, demonstrating
+                    low-level systems programming while providing a functional web server.
+                </p>
+                <p>
+                    Explore the various features using the navigation menu above.
+                </p>
+            </section>
+
+            <section class="feature-section">
+                <div class="feature-card">
+                    <h3>Static File Serving</h3>
+                    <p>The server can efficiently serve various static files including HTML, CSS, images, videos and more.</p>
+                    <a href="/about.html">View Example →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Template Rendering</h3>
+                    <p>Dynamic content generation with a simple template engine that supports variable substitution.</p>
+                    <a href="/template/welcome.html">Try Template →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Binary Integration</h3>
+                    <p>Execute binary programs and incorporate their output directly into HTTP responses.</p>
+                    <a href="/exec/sysinfo">System Info →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Authentication</h3>
+                    <p>HTTP Basic Authentication for protecting sensitive resources from unauthorized access.</p>
+                    <a href="/private/secret.html">Protected Content →</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Assembly HTTP Server &copy; 2025 - A demonstration of low-level web server implementation</p>
+        </footer>
     </body>
 </html>

@@ -1,4 +1,3 @@
-	.file	"auth.c"
 	.text
 	.p2align 4
 	.globl	base64_decode
