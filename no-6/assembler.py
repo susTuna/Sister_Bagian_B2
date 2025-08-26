@@ -21,28 +21,6 @@ def assemble(assembly_filename, mc_filename):
     for index, symbol in enumerate(registers):
         symbols[symbol] = index
 
-    conditions1 = ['eq', 'ne', 'ge', 'lt']
-    conditions2 = ['=', '!=', '>=', '<']
-    conditions3 = ['z', 'nz', 'c', 'nc']
-    conditions4 = ['zero', 'notzero', 'carry', 'notcarry']
-    for index, symbol in enumerate(conditions1):
-        symbols[symbol] = index
-    for index, symbol in enumerate(conditions2):
-        symbols[symbol] = index
-    for index, symbol in enumerate(conditions3):
-        symbols[symbol] = index
-    for index, symbol in enumerate(conditions4):
-        symbols[symbol] = index
-
-    ports = ['pixel_x', 'pixel_y', 'draw_pixel', 'clear_pixel', 'load_pixel', 'buffer_screen', 'clear_screen_buffer', 
-             'write_char', 'buffer_chars', 'clear_chars_buffer', 'show_number', 'clear_number', 'signed_mode', 'unsigned_mode', 'rng', 'controller_input']
-    for index, symbol in enumerate(ports):
-        symbols[symbol] = index + 240
-
-    for i, letter in enumerate([' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '.', '!', '?']):
-        symbols[f'"{letter}"'] = i
-        symbols[f"'{letter}'"] = i
-
     # Extract definitions and labels
     def is_definition(word):
         return word == 'define'
@@ -83,18 +61,10 @@ def assemble(assembly_filename, mc_filename):
             words = ['add', words[1], registers[0], words[2], ] # add A r0 dest
         elif words[0] == 'shl':
             words = ['add', words[1], words[1], words[2]] # add A A dest
-        elif words[0] == 'inc':
-            words = ['adi', words[1], '1'] # adi dest 1
-        elif words[0] == 'dec':
-            words = ['adi', words[1], '-1'] # adi dest -1
         elif words[0] == 'not':
             words = ['nor', words[1], registers[0], words[2]] # nor A r0 dest
         elif words[0] == "neg":
             words = ["sub", registers[0], words[1], words[2]] # sub r0 A dest
-
-        # lod/str optional offset
-        if words[0] in ['lod', 'str'] and len(words) == 3:
-            words.append('0')
 
         # space special case
         if words[-1] in ['"', "'"] and words[-2] in ['"', "'"]:
@@ -107,59 +77,35 @@ def assemble(assembly_filename, mc_filename):
         words = [resolve(word) for word in words]
 
         # Number of operands check
-        if opcode in ['nop', 'hlt', 'ret'] and len(words) != 1:
-            exit(f'Incorrect number of operands for {opcode} on line {pc}')
-        
-        if opcode in ['jmp', 'cal'] and len(words) != 2:
+        if opcode in ['shr', 'ldi'] and len(words) != 3:
             exit(f'Incorrect number of operands for {opcode} on line {pc}')
 
-        if opcode in ['shr', 'ldi', 'adi', 'brh'] and len(words) != 3:
-            exit(f'Incorrect number of operands for {opcode} on line {pc}')
-
-        if opcode in ['add', 'sub', 'nor', 'and', 'xor', 'lod', 'str'] and len(words) != 4:
+        if opcode in ['add', 'sub', 'xor', 'xnr', 'or', 'nor', 'and', 'nnd', 'imp', 'nim'] and len(words) != 4:
             exit(f'Incorrect number of operands for {opcode} on line {pc}')
 
         # Reg A
-        if opcode in ['add', 'sub', 'nor', 'and', 'xor', 'shr', 'ldi', 'adi', 'lod', 'str']:
+        if opcode in ['add', 'sub', 'xor', 'xnr', 'or', 'nor', 'and', 'nnd', 'imp', 'nim', 'shr', 'ldi']:
             if words[1] != (words[1] % (2 ** 4)):
                 exit(f'Invalid reg A for {opcode} on line {pc}')
             machine_code |= (words[1] << 8)
 
         # Reg B
-        if opcode in ['add', 'sub', 'nor', 'and', 'xor', 'lod', 'str']:
+        if opcode in ['add', 'sub', 'xor', 'xnr', 'or', 'nor', 'and', 'nnd', 'imp', 'nim']:
             if words[2] != (words[2] % (2 ** 4)):
                 exit(f'Invalid reg B for {opcode} on line {pc}')
             machine_code |= (words[2] << 4)
 
         # Reg C
-        if opcode in ['add', 'sub', 'nor', 'and', 'xor', 'shr']:
+        if opcode in ['add', 'sub', 'xor', 'xnr', 'or', 'nor', 'and', 'nnd', 'imp', 'nim', 'shr']:
             if words[-1] != (words[-1] % (2 ** 4)):
                 exit(f'Invalid reg C for {opcode} on line {pc}')
             machine_code |= words[-1]
 
         # Immediate
-        if opcode in ['ldi', 'adi']:
+        if opcode in ['ldi']:
             if words[2] < -128 or words[2] > 255: # 2s comp [-128, 127] or uint [0, 255]
                 exit(f'Invalid immediate for {opcode} on line {pc}')
             machine_code |= words[2] & (2 ** 8 - 1)
-        
-        # Instruction memory address
-        if opcode in ['jmp', 'brh', 'cal']:
-            if words[-1] != (words[-1] % (2 ** 10)):
-                exit(f'Invalid instruction memory address for {opcode} on line {pc}')
-            machine_code |= words[-1]
-
-        # Condition
-        if opcode in ['brh']:
-            if words[1] != (words[1] % (2 ** 2)):
-                exit(f'Invalid condition for {opcode} on line {pc}')
-            machine_code |= (words[1] << 10)
-
-        # Offset
-        if opcode in ['lod', 'str']:
-            if words[3] < -8 or words[3] > 7: # 2s comp [-8, 7]
-                exit(f'Invalid offset for {opcode} on line {pc}')
-            machine_code |= words[3] & (2 ** 4 - 1)
 
         as_string = bin(machine_code)[2:].rjust(16, '0')
         machine_code_file.write(f'{as_string}\n')
