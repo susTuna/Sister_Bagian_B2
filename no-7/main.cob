@@ -44,6 +44,7 @@
        77 UPDATED               PIC X VALUE "N".
        77 APPLY-INTEREST        PIC X VALUE "N".
        77 TRANSACTION-VALID     PIC X VALUE "Y".
+       77 ACCOUNT-EXISTS        PIC X VALUE "N".
 
        77 FORMATTED-AMOUNT      PIC Z(5)9.99.
        77 BALANCE-TEXT          PIC X(20).
@@ -55,12 +56,15 @@
        77 MAX-BALANCE           PIC 9(6)V99 VALUE 999999.99.
        77 TEMP-BALANCE          PIC 9(6)V99.
        
-       *> Currency conversion variables
+       77 INTEREST-COUNTER      PIC 9(6) VALUE 0.
        77 RAI-TO-IDR-RATE       PIC 9(9) VALUE 120000000.
        77 IDR-BALANCE           PIC 9(15).
        77 IDR-AMOUNT            PIC 9(15).
        77 IDR-FORMATTED         PIC Z(14)9.
        77 INPUT-IDR-FLAG        PIC X VALUE "N".
+       
+       *> Auto-interest timing variables
+       77 INTEREST-COUNTER      PIC 9(6) VALUE 0.
        
        PROCEDURE DIVISION.
 
@@ -69,41 +73,81 @@
            IF ARG-VALUE = "--apply-interest"
                MOVE "Y" TO APPLY-INTEREST
                PERFORM APPLY-INTEREST-TO-ALL
+           ELSE IF ARG-VALUE = "--auto-interest"
+               PERFORM APPLY-INTEREST-TO-ALL
            ELSE IF ARG-VALUE = "--input-idr"
                MOVE "Y" TO INPUT-IDR-FLAG
                PERFORM READ-INPUT
-               PERFORM PROCESS-RECORDS
-               IF MATCH-FOUND = "N"
-                   IF IN-ACTION = "NEW"
-                       PERFORM APPEND-ACCOUNT
-                       MOVE "ACCOUNT CREATED" TO OUT-RECORD
+               IF IN-ACTION = "NEW"
+                   PERFORM CHECK-ACCOUNT-EXISTS
+                   IF ACCOUNT-EXISTS = "Y"
+                       OPEN OUTPUT OUT-FILE
+                       MOVE "ACCOUNT ALREADY EXISTS" TO OUT-RECORD
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
                    ELSE
+                       PERFORM APPEND-ACCOUNT
+                       OPEN OUTPUT OUT-FILE
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
+                   END-IF
+               ELSE
+                   PERFORM PROCESS-RECORDS
+                   IF MATCH-FOUND = "N"
+                       OPEN OUTPUT OUT-FILE
                        MOVE "ACCOUNT NOT FOUND" TO OUT-RECORD
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
+                   ELSE
+                       PERFORM FINALIZE
                    END-IF
                END-IF
-               PERFORM FINALIZE
            ELSE
                PERFORM READ-INPUT
-               PERFORM PROCESS-RECORDS
-               IF MATCH-FOUND = "N"
-                   IF IN-ACTION = "NEW"
-                       PERFORM APPEND-ACCOUNT
-                       MOVE "ACCOUNT CREATED" TO OUT-RECORD
+               IF IN-ACTION = "NEW"
+                   PERFORM CHECK-ACCOUNT-EXISTS
+                   IF ACCOUNT-EXISTS = "Y"
+                       OPEN OUTPUT OUT-FILE
+                       MOVE "ACCOUNT ALREADY EXISTS" TO OUT-RECORD
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
                    ELSE
+                       PERFORM APPEND-ACCOUNT
+                       OPEN OUTPUT OUT-FILE
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
+                   END-IF
+               ELSE
+                   PERFORM PROCESS-RECORDS
+                   IF MATCH-FOUND = "N"
+                       OPEN OUTPUT OUT-FILE
                        MOVE "ACCOUNT NOT FOUND" TO OUT-RECORD
+                       WRITE OUT-RECORD
+                       CLOSE OUT-FILE
+                   ELSE
+                       PERFORM FINALIZE
                    END-IF
                END-IF
-               PERFORM FINALIZE
            END-IF
            STOP RUN.
            
        APPLY-INTEREST-TO-ALL.
            OPEN INPUT ACC-FILE
-           OPEN OUTPUT TMP-FILE
-           OPEN OUTPUT OUT-FILE
+           READ ACC-FILE
+               AT END
+                   CLOSE ACC-FILE
+                   OPEN OUTPUT OUT-FILE
+                   MOVE "NO ACCOUNTS FOUND" TO OUT-RECORD
+                   WRITE OUT-RECORD
+                   CLOSE OUT-FILE
+                   EXIT PARAGRAPH
+           END-READ
+           CLOSE ACC-FILE
            
-           MOVE "APPLYING INTEREST TO ALL ACCOUNTS" TO OUT-RECORD
-           WRITE OUT-RECORD
+           MOVE "N" TO UPDATED
+           
+           OPEN INPUT ACC-FILE
+           OPEN OUTPUT TMP-FILE
            
            PERFORM UNTIL 1 = 2
                READ ACC-FILE
@@ -111,7 +155,7 @@
                        EXIT PERFORM
                    NOT AT END
                        MOVE ACC-RECORD(1:6) TO ACC-ACCOUNT
-                       MOVE ACC-RECORD(7:3) TO ACC-ACTION
+                       MOVE ACC-RECORD(7:3) TO ACC-ACTION  
                        MOVE FUNCTION NUMVAL(ACC-RECORD(10:8))
                            TO ACC-BALANCE
                            
@@ -132,14 +176,42 @@
                        MOVE FORMATTED-AMOUNT(2:8) TO TMP-RECORD(10:8)
                        
                        WRITE TMP-RECORD
+                       MOVE "Y" TO UPDATED
            END-PERFORM
            
-           MOVE "Y" TO UPDATED
            CLOSE ACC-FILE
            CLOSE TMP-FILE
+           
+           OPEN OUTPUT OUT-FILE
+           IF UPDATED = "Y"
+               MOVE "INTEREST APPLIED TO ALL ACCOUNTS" TO OUT-RECORD
+           ELSE
+               MOVE "NO ACCOUNTS PROCESSED" TO OUT-RECORD
+           END-IF
+           WRITE OUT-RECORD
            CLOSE OUT-FILE
            
-           PERFORM FINALIZE.
+           IF UPDATED = "Y"
+               CALL "SYSTEM" USING "mv temp.txt accounts.txt"
+           END-IF.
+
+       CHECK-ACCOUNT-EXISTS.
+           MOVE "N" TO ACCOUNT-EXISTS
+           OPEN INPUT ACC-FILE
+           
+           PERFORM UNTIL 1 = 2
+               READ ACC-FILE
+                   AT END
+                       EXIT PERFORM
+                   NOT AT END
+                       MOVE ACC-RECORD(1:6) TO ACC-ACCOUNT
+                       IF ACC-ACCOUNT = IN-ACCOUNT
+                           MOVE "Y" TO ACCOUNT-EXISTS
+                           EXIT PERFORM
+                       END-IF
+           END-PERFORM
+           
+           CLOSE ACC-FILE.
 
        READ-INPUT.
            OPEN INPUT IN-FILE
@@ -153,7 +225,6 @@
            MOVE IN-RECORD(7:3) TO IN-ACTION
            MOVE FUNCTION NUMVAL(IN-RECORD(10:9)) TO IN-AMOUNT
            
-           *> Convert IDR input to Rai stone if flag is set
            IF INPUT-IDR-FLAG = "Y" AND IN-ACTION NOT = "BAL"
                COMPUTE IN-AMOUNT = IN-AMOUNT / RAI-TO-IDR-RATE
            END-IF.
@@ -198,7 +269,6 @@
                        MOVE "N" TO TRANSACTION-VALID
                    ELSE
                        ADD IN-AMOUNT TO TMP-BALANCE
-                       *> Convert to IDR for display
                        COMPUTE IDR-AMOUNT = IN-AMOUNT * RAI-TO-IDR-RATE
                        MOVE IDR-AMOUNT TO IDR-FORMATTED
                        MOVE SPACES TO OUT-RECORD
@@ -213,7 +283,6 @@
                        MOVE "N" TO TRANSACTION-VALID
                    ELSE
                        SUBTRACT IN-AMOUNT FROM TMP-BALANCE
-                       *> Convert to IDR for display
                        COMPUTE IDR-AMOUNT = IN-AMOUNT * RAI-TO-IDR-RATE
                        MOVE IDR-AMOUNT TO IDR-FORMATTED
                        MOVE SPACES TO OUT-RECORD
@@ -222,13 +291,15 @@
                               INTO OUT-RECORD
                    END-IF
                WHEN "BAL"
-                   *> Convert balance to IDR for display
                    COMPUTE IDR-BALANCE = TMP-BALANCE * RAI-TO-IDR-RATE
                    MOVE IDR-BALANCE TO IDR-FORMATTED
                    MOVE SPACES TO OUT-RECORD
                    STRING "BALANCE: IDR " DELIMITED BY SIZE
                           IDR-FORMATTED DELIMITED BY SIZE
                           INTO OUT-RECORD
+               WHEN "NEW"
+                   MOVE "NEW ACCOUNT REQUEST PROCESSED ELSEWHERE" 
+                     TO OUT-RECORD
                WHEN OTHER
                    MOVE "UNKNOWN ACTION" TO OUT-RECORD
            END-EVALUATE
@@ -255,7 +326,6 @@
            WRITE ACC-RECORD
            CLOSE ACC-FILE
            
-           *> Convert to IDR for display
            COMPUTE IDR-AMOUNT = IN-AMOUNT * RAI-TO-IDR-RATE
            MOVE IDR-AMOUNT TO IDR-FORMATTED
            MOVE SPACES TO OUT-RECORD
