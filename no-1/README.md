@@ -158,6 +158,12 @@ The server can execute binaries and incorporate their output in HTTP responses.
 - Access via `http://localhost:port/exec/binary_name`
 - Example: `sysinfo` binary provides system information in HTML format
 
+### 10. HTTPS Deployment
+
+This server is deployed in `https://riko.naufarrel.tech/`
+
+![HTTPS Deployment](https://i.imgur.com/H8qZ1co.png)
+
 ## Building and Running
 
 ### Prerequisites
