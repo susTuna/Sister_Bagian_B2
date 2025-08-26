@@ -1,28 +1,28 @@
-BUILD_DIR=build
-SRC_DIR=src
+BUILD_DIR := build
+SRC_DIR := src
 
-# Source files
+EXECUTABLE := $(BUILD_DIR)/http_server
+
 SRCS := $(wildcard $(SRC_DIR)/*.s)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.s,$(BUILD_DIR)/%.o,$(SRCS))
 
-# Default target
-all: build
+OBJS := $(patsubst $(SRC_DIR)/%.s, $(BUILD_DIR)/%.o, $(SRCS))
 
-# Build executable from assembly files
-build: $(BUILD_DIR) $(BUILD_DIR)/http_server
+.PHONY: all
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJS)
+	@echo "Linking..."
+	gcc $(OBJS) -o $(EXECUTABLE)
+	@echo "Build complete: $(EXECUTABLE)"
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s | $(BUILD_DIR)
+	@echo "Assembling $< -> $@"
+	as $< -o $@
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-# Assemble to object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s | $(BUILD_DIR)
-	as $< -o $@
-
-# Link everything together
-$(BUILD_DIR)/http_server: $(OBJ_FILES)
-	gcc $^ -o $@
-
+.PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR)/*.o $(BUILD_DIR)/http_server
-
-.PHONY: build clean
+	@echo "Cleaning up..."
+	rm -rf $(BUILD_DIR)
