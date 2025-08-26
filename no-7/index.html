@@ -76,7 +76,7 @@ sendBtn.addEventListener('click', async () => {
   statusEl.className = "";
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/banking", {
+    const res = await fetch("http://167.71.212.205:31290/banking", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)

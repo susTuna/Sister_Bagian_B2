@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: cobol-app-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: cobol-app
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8000
+    nodePort: 31290

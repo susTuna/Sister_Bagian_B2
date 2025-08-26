@@ -19,8 +19,7 @@ spec:
         - containerPort: 8000
         volumeMounts:
         - name: cobol-data-storage
-          mountPath: /workspace/accounts.txt
-          subPath: accounts.txt
+          mountPath: /data
       volumes:
       - name: cobol-data-storage
         persistentVolumeClaim:
