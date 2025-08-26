@@ -1,6 +1,13 @@
 # Minecraft ASM Converter Tool
 This project provides a set of Python scripts to convert a custom assembly language, tailored for a Minecraft CPU, into a .schem file that can be used in Minecraft.
 
+## Prerequisities
+**1. MCSchematic Library**
+
+Install `mcschematic` python library
+```bash
+pip install mcschematic
+```
 ## How it Works
 The process is broken down into two main steps:
 
