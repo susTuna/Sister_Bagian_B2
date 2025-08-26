@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cobol-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cobol-app
+  template:
+    metadata:
+      labels:
+        app: cobol-app
+    spec:
+      containers:
+      - name: cobol-app-container
+        image: sustuna/cobol-app:1.0
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: cobol-data-storage
+          mountPath: /workspace/accounts.txt
+          subPath: accounts.txt
+      volumes:
+      - name: cobol-data-storage
+        persistentVolumeClaim:
+          claimName: cobol-data-pvc
