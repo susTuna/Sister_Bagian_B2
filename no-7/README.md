@@ -129,17 +129,23 @@ The interest application would be run as separate service using supervisor confi
 
 The application uses an Apache HTTP Server (httpd) reverse proxy setup from the [Tamamo Silang](https://github.com/susTuna/Sister_Bagian_B2/blob/main/no-1/vps-proj/README.md) configuration. A new entry was added for the cobol-app:
 
-```apache
+```d
 # Example reverse proxy configuration
-<VirtualHost *:443>
-    ServerName cobol-banking.yourdomain.com
-    
-    ProxyPreserveHost On
-    ProxyPass / http://167.71.212.205:31290/
-    ProxyPassReverse / http://167.71.212.205:31290/
-    
-    # SSL configuration handled by Tamamo Silang
-</VirtualHost>
+server {
+    listen 443 ssl;
+    server_name cobol.domain.name;
+
+    ssl_certificate /etc/letsencrypt/live/cobol.domain.name/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cobol.domain.name/privkey.pem;
+
+    location / {
+        proxy_pass http://kubernetesip:port/
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 ```
 
 This setup allows external access to the banking application through a clean domain name while maintaining security through the reverse proxy layer.
@@ -231,4 +237,4 @@ chmod +x portforwarding.sh
 
 ## Testing
 
-Access the web interface at your configured domain or directly at `http://167.71.212.205:31290` to perform banking operations.
+Access the web interface at your configured domain or directly at `https://tunadev.dokidokispot.com/` to perform banking operations.
