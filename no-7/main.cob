@@ -63,9 +63,6 @@
        77 IDR-FORMATTED         PIC Z(14)9.
        77 INPUT-IDR-FLAG        PIC X VALUE "N".
        
-       *> Auto-interest timing variables
-       77 INTEREST-COUNTER      PIC 9(6) VALUE 0.
-       
        PROCEDURE DIVISION.
 
        MAIN.
