@@ -76,7 +76,7 @@ sendBtn.addEventListener('click', async () => {
   statusEl.className = "";
 
   try {
-    const res = await fetch("http://167.71.212.205:31290/banking", {
+    const res = await fetch("https://tunadev.dokidokispot.com/banking", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
