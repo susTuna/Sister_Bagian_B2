@@ -1,14 +1,18 @@
-FROM debian:trixie-slim
+FROM alpine:3.21 AS builder
 
-RUN apt-get update && apt-get install -y gcc-14 make
-
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+RUN apk add gcc make musl-dev
 
 WORKDIR /httpd
 
 COPY ./ /httpd/
 
 RUN make
+
+FROM alpine:3.21
+
+WORKDIR /httpd
+
+COPY --from=builder /httpd/ .
 
 EXPOSE 17701
 
