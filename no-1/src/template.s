@@ -3,7 +3,10 @@
 	.globl	template_create_context
 	.type	template_create_context, @function
 template_create_context:
+.LFB10:
+	.cfi_startproc
 	subq	$8, %rsp
+	.cfi_def_cfa_offset 16
 	movl	$416004, %edi
 	call	malloc@PLT
 	testq	%rax, %rax
@@ -11,12 +14,17 @@ template_create_context:
 	movl	$0, 416000(%rax)
 .L1:
 	addq	$8, %rsp
+	.cfi_def_cfa_offset 8
 	ret
+	.cfi_endproc
+.LFE10:
 	.size	template_create_context, .-template_create_context
 	.p2align 4
 	.globl	template_add_variable
 	.type	template_add_variable, @function
 template_add_variable:
+.LFB11:
+	.cfi_startproc
 	testq	%rsi, %rsi
 	sete	%al
 	testq	%rdx, %rdx
@@ -26,13 +34,26 @@ template_add_variable:
 	testq	%rdi, %rdi
 	je	.L14
 	pushq	%r15
+	.cfi_def_cfa_offset 16
+	.cfi_offset 15, -16
 	xorl	%eax, %eax
 	pushq	%r14
+	.cfi_def_cfa_offset 24
+	.cfi_offset 14, -24
 	pushq	%r13
+	.cfi_def_cfa_offset 32
+	.cfi_offset 13, -32
 	pushq	%r12
+	.cfi_def_cfa_offset 40
+	.cfi_offset 12, -40
 	pushq	%rbp
+	.cfi_def_cfa_offset 48
+	.cfi_offset 6, -48
 	pushq	%rbx
+	.cfi_def_cfa_offset 56
+	.cfi_offset 3, -56
 	subq	$8, %rsp
+	.cfi_def_cfa_offset 64
 	movl	416000(%rdi), %r14d
 	cmpl	$99, %r14d
 	jg	.L8
@@ -68,21 +89,41 @@ template_add_variable:
 	movl	$1, %eax
 .L8:
 	addq	$8, %rsp
+	.cfi_def_cfa_offset 56
 	popq	%rbx
+	.cfi_def_cfa_offset 48
 	popq	%rbp
+	.cfi_def_cfa_offset 40
 	popq	%r12
+	.cfi_def_cfa_offset 32
 	popq	%r13
+	.cfi_def_cfa_offset 24
 	popq	%r14
+	.cfi_def_cfa_offset 16
 	popq	%r15
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L14:
+	.cfi_restore 3
+	.cfi_restore 6
+	.cfi_restore 12
+	.cfi_restore 13
+	.cfi_restore 14
+	.cfi_restore 15
 	xorl	%eax, %eax
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L10:
+	.cfi_def_cfa_offset 64
+	.cfi_offset 3, -56
+	.cfi_offset 6, -48
+	.cfi_offset 12, -40
+	.cfi_offset 13, -32
+	.cfi_offset 14, -24
+	.cfi_offset 15, -16
 	movslq	%r14d, %rdi
 	movl	$63, %edx
 	movq	%r13, %rsi
@@ -103,6 +144,8 @@ template_add_variable:
 	movb	$0, 4159(%r12,%rax)
 	movl	%edx, 416000(%r12)
 	jmp	.L13
+	.cfi_endproc
+.LFE11:
 	.size	template_add_variable, .-template_add_variable
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
@@ -112,12 +155,23 @@ template_add_variable:
 	.globl	template_load_file
 	.type	template_load_file, @function
 template_load_file:
+.LFB12:
+	.cfi_startproc
 	pushq	%r13
+	.cfi_def_cfa_offset 16
+	.cfi_offset 13, -16
 	leaq	.LC0(%rip), %rsi
 	pushq	%r12
+	.cfi_def_cfa_offset 24
+	.cfi_offset 12, -24
 	pushq	%rbp
+	.cfi_def_cfa_offset 32
+	.cfi_offset 6, -32
 	pushq	%rbx
+	.cfi_def_cfa_offset 40
+	.cfi_offset 3, -40
 	subq	$8, %rsp
+	.cfi_def_cfa_offset 48
 	call	fopen@PLT
 	testq	%rax, %rax
 	je	.L22
@@ -152,34 +206,50 @@ template_load_file:
 	jne	.L32
 	movb	$0, 0(%rbp,%r12)
 	addq	$8, %rsp
+	.cfi_remember_state
+	.cfi_def_cfa_offset 40
 	movq	%rbp, %rax
 	popq	%rbx
+	.cfi_def_cfa_offset 32
 	popq	%rbp
+	.cfi_def_cfa_offset 24
 	popq	%r12
+	.cfi_def_cfa_offset 16
 	popq	%r13
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L31:
+	.cfi_restore_state
 	movq	%rbx, %rdi
 	call	fclose@PLT
 .L22:
 	xorl	%ebp, %ebp
 .L33:
 	addq	$8, %rsp
+	.cfi_remember_state
+	.cfi_def_cfa_offset 40
 	movq	%rbp, %rax
 	popq	%rbx
+	.cfi_def_cfa_offset 32
 	popq	%rbp
+	.cfi_def_cfa_offset 24
 	popq	%r12
+	.cfi_def_cfa_offset 16
 	popq	%r13
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L32:
+	.cfi_restore_state
 	movq	%rbp, %rdi
 	xorl	%ebp, %ebp
 	call	free@PLT
 	jmp	.L33
+	.cfi_endproc
+.LFE12:
 	.size	template_load_file, .-template_load_file
 	.section	.rodata.str1.1
 .LC1:
@@ -189,13 +259,28 @@ template_load_file:
 	.globl	template_render
 	.type	template_render, @function
 template_render:
+.LFB13:
+	.cfi_startproc
 	pushq	%r15
+	.cfi_def_cfa_offset 16
+	.cfi_offset 15, -16
 	pushq	%r14
+	.cfi_def_cfa_offset 24
+	.cfi_offset 14, -24
 	pushq	%r13
+	.cfi_def_cfa_offset 32
+	.cfi_offset 13, -32
 	pushq	%r12
+	.cfi_def_cfa_offset 40
+	.cfi_offset 12, -40
 	pushq	%rbp
+	.cfi_def_cfa_offset 48
+	.cfi_offset 6, -48
 	pushq	%rbx
+	.cfi_def_cfa_offset 56
+	.cfi_offset 3, -56
 	subq	$120, %rsp
+	.cfi_def_cfa_offset 176
 	movq	%fs:40, %rax
 	movq	%rax, 104(%rsp)
 	xorl	%eax, %eax
@@ -259,15 +344,24 @@ template_render:
 	subq	%fs:40, %rax
 	jne	.L76
 	addq	$120, %rsp
+	.cfi_remember_state
+	.cfi_def_cfa_offset 56
 	movq	%r12, %rax
 	popq	%rbx
+	.cfi_def_cfa_offset 48
 	popq	%rbp
+	.cfi_def_cfa_offset 40
 	popq	%r12
+	.cfi_def_cfa_offset 32
 	popq	%r13
+	.cfi_def_cfa_offset 24
 	popq	%r14
+	.cfi_def_cfa_offset 16
 	popq	%r15
+	.cfi_def_cfa_offset 8
 	ret
 .L75:
+	.cfi_restore_state
 	leaq	32(%rsp), %rdi
 	movq	%r14, %rsi
 	movq	%rdx, 8(%rsp)
@@ -363,15 +457,16 @@ template_render:
 	movw	%dx, (%r12,%rax)
 	leaq	2(%r12,%rax), %rdi
 	movq	%rbx, %rsi
-	call	stpcpy@PLT
+	call	strcpy@PLT
 	movq	%rbx, %rdi
-	movq	%rax, %r14
+	call	strlen@PLT
+	movq	%r12, %rdi
+	leaq	4(%rax,%rbp), %rbp
 	call	strlen@PLT
 	movl	$32125, %ecx
-	movb	$0, 2(%r14)
-	movw	%cx, (%r14)
-	leaq	4(%rbp,%rax), %rbp
+	movw	%cx, (%r12,%rax)
 	movq	8(%rsp), %rcx
+	movb	$0, 2(%r12,%rax)
 	jmp	.L53
 .L77:
 	leaq	64(%r13,%r14), %rsi
@@ -385,11 +480,15 @@ template_render:
 	jmp	.L49
 .L76:
 	call	__stack_chk_fail@PLT
+	.cfi_endproc
+.LFE13:
 	.size	template_render, .-template_render
 	.p2align 4
 	.globl	template_free_context
 	.type	template_free_context, @function
 template_free_context:
+.LFB14:
+	.cfi_startproc
 	testq	%rdi, %rdi
 	je	.L78
 	jmp	free@PLT
@@ -397,6 +496,8 @@ template_free_context:
 	.p2align 3
 .L78:
 	ret
+	.cfi_endproc
+.LFE14:
 	.size	template_free_context, .-template_free_context
 	.ident	"GCC: (GNU) 15.2.1 20250813"
 	.section	.note.GNU-stack,"",@progbits

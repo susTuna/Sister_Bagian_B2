@@ -3,10 +3,19 @@
 	.globl	base64_decode
 	.type	base64_decode, @function
 base64_decode:
+.LFB10:
+	.cfi_startproc
 	pushq	%r12
+	.cfi_def_cfa_offset 16
+	.cfi_offset 12, -16
 	pushq	%rbp
+	.cfi_def_cfa_offset 24
+	.cfi_offset 6, -24
 	pushq	%rbx
+	.cfi_def_cfa_offset 32
+	.cfi_offset 3, -32
 	subq	$288, %rsp
+	.cfi_def_cfa_offset 320
 	movq	%fs:40, %rax
 	movq	%rax, 280(%rsp)
 	xorl	%eax, %eax
@@ -125,14 +134,20 @@ base64_decode:
 	subq	%fs:40, %rax
 	jne	.L30
 	addq	$288, %rsp
+	.cfi_remember_state
+	.cfi_def_cfa_offset 32
 	movq	%rdi, %rax
 	popq	%rbx
+	.cfi_def_cfa_offset 24
 	popq	%rbp
+	.cfi_def_cfa_offset 16
 	popq	%r12
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L29:
+	.cfi_restore_state
 	movl	%ecx, %esi
 	jmp	.L11
 	.p2align 4,,10
@@ -147,6 +162,8 @@ base64_decode:
 	jmp	.L8
 .L30:
 	call	__stack_chk_fail@PLT
+	.cfi_endproc
+.LFE10:
 	.size	base64_decode, .-base64_decode
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC2:
@@ -160,9 +177,17 @@ base64_decode:
 	.globl	authenticate_user
 	.type	authenticate_user, @function
 authenticate_user:
+.LFB11:
+	.cfi_startproc
 	pushq	%r12
+	.cfi_def_cfa_offset 16
+	.cfi_offset 12, -16
 	pushq	%rbp
+	.cfi_def_cfa_offset 24
+	.cfi_offset 6, -24
 	pushq	%rbx
+	.cfi_def_cfa_offset 32
+	.cfi_offset 3, -32
 	testq	%rdi, %rdi
 	je	.L33
 	call	base64_decode
@@ -210,33 +235,49 @@ authenticate_user:
 	call	free@PLT
 	movl	%ebx, %eax
 	popq	%rbx
+	.cfi_remember_state
+	.cfi_def_cfa_offset 24
 	popq	%rbp
+	.cfi_def_cfa_offset 16
 	popq	%r12
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L46:
+	.cfi_restore_state
 	movq	%rbp, %rdi
 	call	free@PLT
 .L33:
 	xorl	%ebx, %ebx
 	movl	%ebx, %eax
 	popq	%rbx
+	.cfi_remember_state
+	.cfi_def_cfa_offset 24
 	popq	%rbp
+	.cfi_def_cfa_offset 16
 	popq	%r12
+	.cfi_def_cfa_offset 8
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L40:
+	.cfi_restore_state
 	movl	$1, %ebx
 	jmp	.L38
+	.cfi_endproc
+.LFE11:
 	.size	authenticate_user, .-authenticate_user
 	.p2align 4
 	.globl	create_auth_response
 	.type	create_auth_response, @function
 create_auth_response:
+.LFB12:
+	.cfi_startproc
 	leaq	response.0(%rip), %rax
 	ret
+	.cfi_endproc
+.LFE12:
 	.size	create_auth_response, .-create_auth_response
 	.data
 	.align 32
